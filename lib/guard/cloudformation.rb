@@ -41,7 +41,7 @@ module Guard
     private
 
     def all_paths
-      Dir.glob("#{@options[:templates_path]}/*")
+      Dir.glob("#{@options[:templates_path]}/*.json")
     end
 
     def run!(paths)
