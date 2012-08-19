@@ -1,5 +1,12 @@
 # Guard::Cloudformation
 
+[![Build History][2]][1] [![Dependency Status][4]][3]
+
+[1]: http://travis-ci.org/tongueroo/guard-cloudformation
+[2]: https://secure.travis-ci.org/tongueroo/guard-cloudformation.png?branch=master
+[3]: https://gemnasium.com/tongueroo/guard-cloudformation
+[4]: https://gemnasium.com/tongueroo/guard-cloudformation.png
+
 Guard::Cloudformation automatically runs validates cloud formation templates via cfn-validate-template.
 
 ## Installation
