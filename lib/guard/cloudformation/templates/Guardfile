@@ -1,0 +1,3 @@
+guard "cloudformation", :templates_path => "templates" do
+  watch(%r{^templates/.+\.json$})
+end
