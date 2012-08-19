@@ -16,4 +16,5 @@ Gem::Specification.new do |gem|
   gem.version       = Guard::CLOUDFORMATION_VERSION
 
   gem.add_dependency "colorize"
+  gem.add_dependency "guard"
 end
