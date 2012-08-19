@@ -8,6 +8,7 @@ group :development do
   gem "guard-bundler"
   gem "guard-rspec"
   gem "rb-fsevent"
+  gem "rake"
   gem "rspec"
   gem "travis-lint"
 end
