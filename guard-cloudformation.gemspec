@@ -15,6 +15,5 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = Guard::CLOUDFORMATION_VERSION
 
-  gem.add_dependency "rake"
   gem.add_dependency "colorize"
 end
