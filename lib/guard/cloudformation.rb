@@ -59,23 +59,22 @@ module Guard
     # Returns false if just one template is invalid
     def validate(paths)
       UI.info "Validating Templates..." #.green
-      threads = []
       @results = {}
-      stagger = paths.size * 1000
-      paths.each do |path|
-        thread_id = (0...8).map{65.+(rand(25)).chr}.join
-        @results[thread_id] = {}
-        threads << Thread.new do
-          time = rand(stagger)/1000.0
-          puts "sleeping for #{time} seconds\n"
-          sleep(time)
-          output,success = command(path)
-          @results[thread_id][:path] = path
-          @results[thread_id][:success] = success
-          @results[thread_id][:output] = output
+      paths.each_slice(2) do |slice|
+        puts "slice #{slice.inspect}"
+        threads = []
+        slice.each do |path|
+          thread_id = (0...8).map{65.+(rand(25)).chr}.join
+          @results[thread_id] = {}
+          threads << Thread.new do
+            output,success = command(path)
+            @results[thread_id][:path] = path
+            @results[thread_id][:success] = success
+            @results[thread_id][:output] = output
+          end
         end
+        threads.collect {|t| t.join}
       end
-      threads.collect {|t| t.join}
 
       @results.each do |thread_id,data|
         if data[:success]
