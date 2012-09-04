@@ -17,4 +17,5 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency "colorize"
   gem.add_dependency "guard"
+  gem.add_dependency "popen4"
 end

@@ -1,6 +1,7 @@
 require "guard"
 require "guard/guard"
 require "colorize"
+require "popen4"
 
 module Guard
   class Cloudformation < Guard
@@ -10,6 +11,7 @@ module Guard
     # @param [Hash] options the custom Guard options
     def initialize(watchers = [], options = {})
       super
+      @results = {}
       @options = {
         :all_on_start => true,
         :templates_path => "templates",
@@ -53,22 +55,57 @@ module Guard
       end
     end
 
+    # Returns true if all templates are valid
+    # Returns false if just one template is invalid
     def validate(paths)
-      UI.info "Validating: #{paths.join(' ')}".green
-      all_success = true
+      UI.info "Validating Templates..." #.green
+      threads = []
+      @results = {}
+      stagger = paths.size * 1000
       paths.each do |path|
-        puts "Validating #{path}...".green
-        success = command(path)
-        if !success
-          puts "FAILED: #{path}".red
+        thread_id = (0...8).map{65.+(rand(25)).chr}.join
+        @results[thread_id] = {}
+        threads << Thread.new do
+          time = rand(stagger)/1000.0
+          puts "sleeping for #{time} seconds\n"
+          sleep(time)
+          output,success = command(path)
+          @results[thread_id][:path] = path
+          @results[thread_id][:success] = success
+          @results[thread_id][:output] = output
+        end
+      end
+      threads.collect {|t| t.join}
+
+      @results.each do |thread_id,data|
+        if data[:success]
+          puts "Template #{data[:path]} is valid".green
+        else
+          puts "Template #{data[:path]} is invalid".red
+        end
+        puts data[:output]
+      end
+
+      all_success = true
+      @results.each do |thread_id,data|
+        if !data[:success]
           all_success = false
+          break
         end
       end
       all_success
     end
 
     def command(path)
-      system "cfn-validate-template --template-file #{path}"
+      cmd = "cfn-validate-template --template-file #{path}"
+      out = "#{cmd}\n"
+      status = POpen4::popen4(cmd) do |stdout, stderr, stdin, pid|
+        out << stdout.read
+        out << stderr.read.red
+        # puts "stderr: #{stderr.inspect}"
+      end
+      [out, status.success?]
     end
+
   end
 end
